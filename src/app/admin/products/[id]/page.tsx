@@ -31,10 +31,19 @@ async function save(fd: FormData) {
     sku: String(fd.get("sku")).trim(),
     name: String(fd.get("name")).trim(),
     category_id: fd.get("category_id") ? Number(fd.get("category_id")) : null,
+    brand_id: fd.get("brand_id") ? Number(fd.get("brand_id")) : null,
     price: num("price"),
     mrp: fd.get("mrp") ? num("mrp") : null,
     stock: Math.floor(num("stock")),
     warranty: String(fd.get("warranty") || "") || null,
+    // one "Key: Value" per line
+    specs: Object.fromEntries(
+      String(fd.get("specs") || "")
+        .split(/\r?\n/)
+        .map((line) => line.split(/:([\s\S]*)/))
+        .filter(([k, v]) => k.trim() && v?.trim())
+        .map(([k, v]) => [k.trim(), v.trim()]),
+    ),
     active: fd.get("active") === "on",
     images,
   };
@@ -47,6 +56,7 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const sb = await requireAdmin();
   const { data: categories } = await sb.from("categories").select("id, name").order("name");
+  const { data: brands } = await sb.from("brands").select("id, name").order("name");
   const { data: p } = id === "new" ? { data: null } : await sb.from("products").select("*").eq("id", id).single();
   const input = "w-full rounded border border-slate-300 px-3 py-2";
   return (
@@ -62,6 +72,12 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
           </select>
         </label>
       </div>
+      <label className="block text-sm">Brand
+        <select name="brand_id" defaultValue={p?.brand_id ?? ""} className={input}>
+          <option value="">—</option>
+          {brands?.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+        </select>
+      </label>
       <label className="block text-sm">Name<input name="name" required defaultValue={p?.name} className={input} /></label>
       <div className="grid grid-cols-3 gap-4">
         <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" required defaultValue={p?.price} className={input} /></label>
@@ -69,6 +85,9 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
         <label className="text-sm">Stock<input name="stock" type="number" min="0" step="1" required defaultValue={p?.stock ?? 0} className={input} /></label>
       </div>
       <label className="block text-sm">Warranty<input name="warranty" defaultValue={p?.warranty ?? ""} placeholder="e.g. 3 years" className={input} /></label>
+      <label className="block text-sm">Specifications (one per line, e.g. Material: Steel)
+        <textarea name="specs" rows={4} defaultValue={Object.entries(p?.specs ?? {}).map(([k, v]) => `${k}: ${v}`).join("\n")} className={input} />
+      </label>
       <div className="text-sm">
         Images
         {p?.images?.length > 0 && (

@@ -1,0 +1,17 @@
+export const brands = ["Hero", "Bajaj", "Honda", "TVS", "Yamaha", "Royal Enfield", "KTM", "Suzuki", "Mahindra"];
+export const brandSlug = (b: string) => b.toLowerCase().replace(/ /g, "-");
+
+// Primary links stay visible; the rest live under "More" (desktop) / the menu (mobile). Policies are repeated in the footer.
+export const primary = [
+  { href: "/products", label: "Products" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
+];
+export const more = [
+  { href: "/about", label: "About us" },
+  { href: "/testimonials", label: "Testimonials" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/shipping-and-delivery", label: "Shipping & delivery" },
+  { href: "/refund-and-return-policy", label: "Refund & return policy" },
+  { href: "/privacy-policy", label: "Privacy policy" },
+];

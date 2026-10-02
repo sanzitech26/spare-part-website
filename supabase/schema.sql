@@ -66,3 +66,48 @@ create policy "own orders read" on orders for select using (user_id = auth.uid()
 create policy "admin orders update" on orders for update using (is_admin());
 create policy "own order items read" on order_items for select using (exists (select 1 from orders o where o.id = order_id and (o.user_id = auth.uid() or is_admin())));
 -- order creation + payment confirmation go through server routes using the service-role key.
+
+-- ===== Phase 2: content tables, product brand =====
+alter table products add column brand_id int references brands;
+
+create table faqs (id serial primary key, question text not null, answer text not null, sort int not null default 0, active boolean not null default true);
+create table testimonials (id serial primary key, name text not null, text text not null, rating int not null default 5 check (rating between 1 and 5), active boolean not null default true, created_at timestamptz default now());
+create table posts (id serial primary key, slug text unique not null, title text not null, excerpt text, body text not null, cover_url text, published boolean not null default false, created_at timestamptz default now());
+
+alter table faqs enable row level security; alter table testimonials enable row level security; alter table posts enable row level security;
+create policy "public read" on faqs for select using (active or is_admin());
+create policy "public read" on testimonials for select using (active or is_admin());
+create policy "public read" on posts for select using (published or is_admin());
+create policy "admin write" on faqs for all using (is_admin()) with check (is_admin());
+create policy "admin write" on testimonials for all using (is_admin()) with check (is_admin());
+create policy "admin write" on posts for all using (is_admin()) with check (is_admin());
+
+insert into brands (name, slug) values ('Hero','hero'),('Bajaj','bajaj'),('Honda','honda'),('TVS','tvs'),('Yamaha','yamaha'),('Royal Enfield','royal-enfield'),('KTM','ktm'),('Suzuki','suzuki'),('Mahindra','mahindra') on conflict do nothing;
+
+-- ===== Phase 2b: checkout =====
+alter table orders add column shipping numeric(10,2) not null default 0;
+
+-- Atomic: locks product rows, checks stock, prices from DB, creates order + items, reserves stock.
+-- Called only by the server (service role); not callable by anon/authenticated.
+create function place_order(p_user uuid, p_items jsonb, p_address jsonb, p_free_over numeric, p_flat numeric)
+returns uuid language plpgsql security definer set search_path = '' as $$
+declare
+  v_order uuid; v_sub numeric := 0; v_ship numeric; r record; prod record;
+begin
+  if jsonb_array_length(p_items) = 0 then raise exception 'Cart is empty'; end if;
+  insert into public.orders (user_id, total, shipping, address) values (p_user, 0, 0, p_address) returning id into v_order;
+  for r in select (e->>'id')::int as id, (e->>'qty')::int as qty from jsonb_array_elements(p_items) e order by 1 loop
+    if r.qty < 1 or r.qty > 100 then raise exception 'Invalid quantity'; end if;
+    select * into prod from public.products where id = r.id and active for update;
+    if not found then raise exception 'Product no longer available'; end if;
+    if prod.stock < r.qty then raise exception 'Not enough stock for %', prod.name; end if;
+    update public.products set stock = stock - r.qty where id = r.id;
+    insert into public.order_items (order_id, product_id, qty, unit_price) values (v_order, r.id, r.qty, prod.price);
+    v_sub := v_sub + prod.price * r.qty;
+  end loop;
+  v_ship := case when v_sub >= p_free_over then 0 else p_flat end;
+  update public.orders set total = v_sub + v_ship, shipping = v_ship where id = v_order;
+  return v_order;
+end $$;
+revoke execute on function place_order(uuid, jsonb, jsonb, numeric, numeric) from public, anon, authenticated;
+grant execute on function place_order(uuid, jsonb, jsonb, numeric, numeric) to service_role;
