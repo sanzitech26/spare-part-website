@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
 // ponytail: placeholder data + Unsplash photos; swap for supabase() queries / real product images later
 const img = (id: string, w = 600) => `https://images.unsplash.com/${id}?w=${w}&q=70&auto=format&fit=crop`;
 const HERO = img("photo-1558981806-ec527fa84c39", 1800);
@@ -22,9 +23,9 @@ export default function Home() {
       </div>
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-          <a href="/" className="text-xl font-extrabold tracking-tight text-slate-900">
+          <Link href="/" className="text-xl font-extrabold tracking-tight text-slate-900">
             BRAND<span className="text-brand">NAME</span>
-          </a>
+          </Link>
           <form action="/search" className="flex-1">
             <input
               name="q"
