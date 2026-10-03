@@ -25,7 +25,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <p className="border-t border-neutral-800 py-4 text-center">© {new Date().getFullYear()} BRAND NAME. All rights reserved.</p>
+      <p className="border-t border-neutral-800 py-4 text-center">© {new Date().getFullYear()} BRAND NAME. All rights reserved. Photography from Unsplash.</p>
     </footer>
   );
 }

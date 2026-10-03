@@ -1,11 +1,18 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Prose from "@/components/Prose";
+import { img } from "@/lib/images";
 
 export const metadata = { title: "About us" };
 
 // ponytail: placeholder copy; client to replace with real company story
 export default function About() {
   return (
+    <>
+    <div className="relative h-48 overflow-hidden bg-neutral-950 sm:h-64">
+      <img src={img.frontDark} alt="" fetchPriority="high" className="h-full w-full object-cover object-[center_40%] opacity-70" />
+      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 to-transparent" />
+    </div>
     <Prose title="About us">
       <p>BRAND NAME supplies genuine and OEM spare parts for Mercedes-Benz cars and vans. We help owners and workshops across India find the exact part their car needs, with clear fitment information and delivery to the door.</p>
       <h2>What we stand for</h2>
@@ -20,5 +27,6 @@ export default function About() {
       <p>Looking for a part you cannot see? <Link href="/contact">Contact us</Link> and we will source it.</p>
       <p className="text-sm text-slate-500">BRAND NAME is an independent parts supplier and is not affiliated with or endorsed by Mercedes-Benz Group AG. Mercedes-Benz is a trademark of its owner.</p>
     </Prose>
+    </>
   );
 }

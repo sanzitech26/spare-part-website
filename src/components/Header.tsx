@@ -44,7 +44,6 @@ export default async function Header() {
             />
           </form>
           <div className="ml-auto flex items-center gap-4 md:ml-0">
-            <Link href="/login" className="text-sm font-medium hover:text-white">Login</Link>
             <Link href="/cart" className="relative rounded-full bg-white px-4 py-2 text-sm font-semibold text-neutral-900 hover:bg-slate-200">
               Cart<CartBadge />
             </Link>

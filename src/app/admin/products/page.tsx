@@ -16,10 +16,8 @@ async function quickSave(fd: FormData) {
     if (!Number.isFinite(n) || n < 0) throw new Error(`Invalid ${k}`);
     return n;
   };
-  const stock = Math.floor(Number(fd.get("stock") ?? 0));
-  if (!Number.isFinite(stock) || stock < 0) throw new Error("Invalid stock");
   const { error } = await sb.from("products")
-    .update({ price: money("price"), mrp: money("mrp"), stock, active: fd.get("active") === "on" })
+    .update({ price: money("price"), mrp: money("mrp"), active: fd.get("active") === "on" })
     .eq("id", Number(fd.get("id")));
   if (error) throw new Error(error.message);
   revalidatePath("/admin/products");
@@ -31,7 +29,7 @@ export default async function Products({ searchParams }: { searchParams: Promise
   const { data: categories } = await sb.from("categories").select("id, name, slug").order("sort").order("name");
   const cat = categories?.find((c) => c.slug === category);
 
-  let query = sb.from("products").select("id, sku, name, price, mrp, stock, active, images, category_id").order("sku");
+  let query = sb.from("products").select("id, sku, name, price, mrp, active, images, category_id").order("sku");
   if (cat) query = query.eq("category_id", cat.id);
   if (missing) query = query.is("price", null);
   const term = q?.replace(/[,()%*\\]/g, " ").trim();
@@ -66,7 +64,7 @@ export default async function Products({ searchParams }: { searchParams: Promise
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-100 text-slate-600">
-            <tr><th className="p-3">Part</th><th>Price ₹</th><th>MRP ₹</th><th>Stock</th><th>Visible</th><th></th><th></th></tr>
+            <tr><th className="p-3">Part</th><th>Price ₹</th><th>MRP ₹</th><th>Visible</th><th></th><th></th></tr>
           </thead>
           <tbody>
             {products?.map((p) => (
@@ -80,7 +78,6 @@ export default async function Products({ searchParams }: { searchParams: Promise
                 {/* inputs sit in table cells and attach to the row's form via the form attribute */}
                 <td><input form={`f${p.id}`} name="price" type="number" step="0.01" min="0" defaultValue={p.price ?? ""} placeholder="—" className={`${input} ${p.price == null ? "border-red-300 bg-red-50" : ""}`} /></td>
                 <td><input form={`f${p.id}`} name="mrp" type="number" step="0.01" min="0" defaultValue={p.mrp ?? ""} placeholder="—" className={input} /></td>
-                <td><input form={`f${p.id}`} name="stock" type="number" step="1" min="0" defaultValue={p.stock} className="w-20 rounded border border-slate-300 px-2 py-1 text-sm" /></td>
                 <td><input form={`f${p.id}`} type="checkbox" name="active" defaultChecked={p.active} /></td>
                 <td>
                   <form id={`f${p.id}`} action={quickSave}>
@@ -91,7 +88,7 @@ export default async function Products({ searchParams }: { searchParams: Promise
                 <td className="pr-3"><Link href={`/admin/products/${p.id}`} className="text-accent hover:underline">Edit</Link></td>
               </tr>
             ))}
-            {!products?.length && <tr><td colSpan={7} className="p-6 text-center text-slate-500">No products match.</td></tr>}
+            {!products?.length && <tr><td colSpan={6} className="p-6 text-center text-slate-500">No products match.</td></tr>}
           </tbody>
         </table>
       </div>

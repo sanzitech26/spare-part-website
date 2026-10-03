@@ -16,8 +16,6 @@ async function save(fd: FormData) {
     if (!Number.isFinite(n) || n < 0) throw new Error(`Invalid ${k}`);
     return n;
   };
-  const stock = Math.floor(Number(fd.get("stock") ?? 0));
-  if (!Number.isFinite(stock) || stock < 0) throw new Error("Invalid stock");
 
   // keep existing images minus the ticked ones, then append uploads
   const removed = new Set(fd.getAll("remove").map(String));
@@ -38,7 +36,6 @@ async function save(fd: FormData) {
     description: String(fd.get("description") || "").trim() || null,
     price: money("price"),
     mrp: money("mrp"),
-    stock,
     warranty: String(fd.get("warranty") || "") || null,
     // one "Key: Value" per line
     specs: Object.fromEntries(
@@ -99,12 +96,11 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
       <label className="block text-sm">Description (optional)
         <textarea name="description" rows={3} defaultValue={p?.description ?? ""} className={input} />
       </label>
-      <div className="grid grid-cols-3 gap-4">
-        <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = on request" className={input} /></label>
+      <div className="grid grid-cols-2 gap-4">
+        <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={input} /></label>
         <label className="text-sm">MRP (₹)<input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={input} /></label>
-        <label className="text-sm">Stock<input name="stock" type="number" min="0" step="1" required defaultValue={p?.stock ?? 0} className={input} /></label>
       </div>
-      <p className="-mt-2 text-xs text-slate-500">Leave Price empty to show &quot;Price on request&quot; with an Enquire button. Customers can only add to cart once there is a price and stock.</p>
+      <p className="-mt-2 text-xs text-slate-500">Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
 
       <fieldset className="text-sm">
         <legend className="mb-1">Fits these models</legend>

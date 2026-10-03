@@ -45,19 +45,10 @@ export default async function Product({ params }: { params: Promise<{ sku: strin
 
           <div className="mt-5"><Price p={p} big /></div>
           {p.price != null && (
-            <p className={`mt-2 text-sm font-semibold ${p.stock > 0 ? "text-green-700" : "text-red-600"}`}>
-              {p.stock === 0 ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}
-            </p>
+            <div className="mt-5 max-w-sm">
+              <AddToCart className="w-full py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
+            </div>
           )}
-          <div className="mt-5 flex max-w-sm flex-col gap-3">
-            {p.price == null ? (
-              <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="rounded-full bg-neutral-900 py-3 text-center font-semibold text-white hover:bg-black">Enquire about this part</Link>
-            ) : p.stock > 0 ? (
-              <AddToCart className="py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
-            ) : (
-              <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="rounded-full border border-neutral-900 py-3 text-center font-semibold hover:bg-neutral-900 hover:text-white">Ask when it is back</Link>
-            )}
-          </div>
 
           <div className="mt-8">
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-500">Fits</h2>
@@ -66,7 +57,7 @@ export default async function Product({ params }: { params: Promise<{ sku: strin
                 {models.map((m) => <span key={m} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-800">{m}</span>)}
               </div>
             ) : (
-              <p className="text-sm text-slate-600">Fitment not listed for this part. <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="text-accent underline">Send us your model and VIN</Link> and we will confirm.</p>
+              <p className="text-sm text-slate-600">Fitment details not listed for this part yet.</p>
             )}
           </div>
 

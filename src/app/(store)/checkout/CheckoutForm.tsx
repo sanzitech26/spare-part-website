@@ -18,11 +18,15 @@ export default function CheckoutForm() {
     <form action={action} className="grid gap-8 md:grid-cols-[1fr_340px]">
       <input type="hidden" name="items" value={JSON.stringify(items.map((i) => ({ id: i.id, qty: i.qty })))} />
       <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="text-xl font-bold">Delivery address</h2>
+        <h2 className="text-xl font-bold">Your details</h2>
+        {/* honeypot: hidden from people, filled by bots */}
+        <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">Full name *<input name="name" required className={input} /></label>
           <label className="text-sm">Phone *<input name="phone" type="tel" inputMode="numeric" required maxLength={10} className={input} /></label>
         </div>
+        <label className="block text-sm">Email *<input name="email" type="email" required className={input} /></label>
+        <h2 className="pt-2 text-xl font-bold">Delivery address</h2>
         <label className="block text-sm">Address line 1 *<input name="line1" required className={input} /></label>
         <label className="block text-sm">Address line 2<input name="line2" className={input} /></label>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -44,7 +48,7 @@ export default function CheckoutForm() {
         <button disabled={pending} className="w-full rounded-full bg-brand py-3 font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
           {pending ? "Placing order…" : "Place order"}
         </button>
-        <p className="text-xs text-slate-500">Final prices and stock are confirmed when you place the order.</p>
+        <p className="text-xs text-slate-500">Final prices are confirmed when you place the order.</p>
       </aside>
     </form>
   );

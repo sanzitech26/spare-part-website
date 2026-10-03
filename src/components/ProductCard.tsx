@@ -39,14 +39,14 @@ export function Tile({ p, big = false }: { p: P; big?: boolean }) {
   if (p.images?.[0]) return <img src={p.images[0]} alt={p.name} className={`${big ? "aspect-square" : "aspect-[4/3]"} w-full object-cover`} />;
   return (
     <div className={`${big ? "aspect-square" : "aspect-[4/3]"} flex w-full flex-col items-center justify-center gap-1 bg-gradient-to-br ${tints[cat?.slug ?? ""] ?? "from-slate-600 to-neutral-900"} text-white/80`}>
-      <span className={`${big ? "text-base" : "text-xs"} font-semibold uppercase tracking-[0.2em]`}>{cat?.name ?? "Part"}</span>
+      <span className={`${big ? "text-base" : "text-xs"} font-mono font-semibold tracking-[0.25em]`}>{p.sku}</span>
       <span className="text-[10px] uppercase tracking-widest text-white/40">Photo coming soon</span>
     </div>
   );
 }
 
 export function Price({ p, big = false }: { p: P; big?: boolean }) {
-  if (p.price == null) return <span className={`${big ? "text-2xl" : "text-sm"} font-semibold text-slate-600`}>Price on request</span>;
+  if (p.price == null) return <span className={`${big ? "text-2xl" : "text-sm"} font-semibold text-slate-500`}>Price coming soon</span>;
   const off = discount(p);
   return (
     <div className="flex items-baseline gap-2">
@@ -74,17 +74,11 @@ export default function ProductCard({ p }: { p: P }) {
                 {models.slice(0, 3).map((m) => <span key={m} className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">{m}</span>)}
                 {models.length > 3 && <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">+{models.length - 3}</span>}
               </>
-            : <span className="rounded border border-dashed border-slate-300 px-2 py-0.5 text-[11px] text-slate-500">Fitment on request</span>}
+            : null}
         </div>
         <div className="mt-auto space-y-3 pt-4">
           <Price p={p} />
-          {p.price == null ? (
-            <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="block rounded-full border border-slate-900 py-2 text-center text-sm font-semibold text-slate-900 hover:bg-slate-900 hover:text-white">Enquire</Link>
-          ) : p.stock > 0 ? (
-            <AddToCart className="w-full" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
-          ) : (
-            <p className="py-2 text-center text-sm font-semibold text-red-600">Out of stock</p>
-          )}
+          {p.price != null && <AddToCart className="w-full" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />}
         </div>
       </div>
     </div>

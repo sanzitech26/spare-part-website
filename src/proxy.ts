@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the Supabase session cookie on /admin and /checkout; logged-out /admin visitors go to /login.
+// Refreshes the Supabase session cookie on /admin; logged-out /admin visitors go to /login.
 // Role (admin) is enforced in requireAdmin(), not here.
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next({ request: req });
@@ -24,4 +24,4 @@ export async function proxy(req: NextRequest) {
   return res;
 }
 
-export const config = { matcher: ["/admin/:path*", "/checkout"] };
+export const config = { matcher: ["/admin/:path*"] };
