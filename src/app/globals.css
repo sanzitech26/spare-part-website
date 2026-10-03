@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-/* Light theme only. Accent = orange; change --color-brand to rebrand. */
+/* Light surfaces, charcoal brand colour, one cool accent. Change these tokens to re-theme the whole site. */
 @theme inline {
-  --color-brand: #ea580c;
-  --color-brand-dark: #c2410c;
+  --color-brand: #171a21;       /* primary buttons, active chips */
+  --color-brand-dark: #000000;  /* button hover */
+  --color-accent: #0e7490;      /* links, hover states, focus */
+  --color-silver: #eef0f3;      /* soft panels */
   --font-sans: var(--font-geist-sans);
 }
 
@@ -11,6 +13,6 @@
 
 body {
   background: #fff;
-  color: #0f172a;
+  color: #14171c;
   font-family: var(--font-geist-sans), Arial, sans-serif;
 }

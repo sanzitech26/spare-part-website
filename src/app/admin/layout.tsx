@@ -16,12 +16,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="bg-slate-900 text-white">
         <nav className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-3 text-sm font-medium">
           <span className="font-extrabold">Admin</span>
-          <Link href="/admin/products" className="hover:text-orange-400">Products</Link>
-          <Link href="/admin/categories" className="hover:text-orange-400">Categories</Link>
-          <Link href="/admin/orders" className="hover:text-orange-400">Orders</Link>
-          <Link href="/admin/posts" className="hover:text-orange-400">Blog</Link>
-          <Link href="/admin/faqs" className="hover:text-orange-400">FAQ</Link>
-          <Link href="/admin/testimonials" className="hover:text-orange-400">Testimonials</Link>
+          <Link href="/admin/products" className="hover:text-cyan-300">Products</Link>
+          <Link href="/admin/categories" className="hover:text-cyan-300">Categories</Link>
+          <Link href="/admin/models" className="hover:text-cyan-300">Models</Link>
+          <Link href="/admin/orders" className="hover:text-cyan-300">Orders</Link>
+          <Link href="/admin/posts" className="hover:text-cyan-300">Blog</Link>
+          <Link href="/admin/faqs" className="hover:text-cyan-300">FAQ</Link>
+          <Link href="/admin/testimonials" className="hover:text-cyan-300">Testimonials</Link>
           <Link href="/" className="ml-auto text-slate-300 hover:text-white">View site</Link>
           <form action={signOut}><button className="text-slate-300 hover:text-white">Sign out</button></form>
         </nav>

@@ -3,63 +3,95 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { AddToCart } from "@/components/cart";
-import { discount } from "@/components/ProductCard";
+import ProductCard, { CARD_SELECT, Price, Tile, modelNames, one, type P } from "@/components/ProductCard";
 
 export default async function Product({ params }: { params: Promise<{ sku: string }> }) {
   const sku = decodeURIComponent((await params).sku);
   const sb = await supabase();
-  const { data: p } = await sb
+  const { data } = await sb
     .from("products")
-    .select("id, sku, name, price, mrp, stock, images, specs, warranty, brands(name, slug), categories(name, slug)")
+    .select(`${CARD_SELECT}, category_id, description, warranty`)
     .eq("sku", sku).eq("active", true).maybeSingle();
-  if (!p) notFound();
+  if (!data) notFound();
+  const p = data as unknown as P & { category_id: number | null; description: string | null; warranty: string | null };
+  const cat = one(p.categories);
+  const models = modelNames(p);
+  const specs = Object.entries(p.specs ?? {});
 
-  const one = <T,>(v: T | T[] | null) => (Array.isArray(v) ? v[0] : v);
-  const brand = one(p.brands), cat = one(p.categories);
-  const off = discount(p);
-  const specs = Object.entries((p.specs ?? {}) as Record<string, unknown>);
+  const { data: rel } = p.category_id
+    ? await sb.from("products").select(CARD_SELECT).eq("active", true).eq("category_id", p.category_id).neq("id", p.id).order("id").limit(4)
+    : { data: [] };
+  const related = (rel ?? []) as unknown as P[];
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 md:grid-cols-2">
-      <div>
-        {p.images?.[0]
-          ? <img src={p.images[0]} alt={p.name} className="aspect-square w-full rounded-xl border border-slate-200 object-cover" />
-          : <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-slate-100 text-slate-400">No image</div>}
-        {p.images?.length > 1 && (
-          <div className="mt-3 grid grid-cols-5 gap-2">
-            {p.images.slice(1).map((u: string) => <img key={u} src={u} alt="" className="aspect-square rounded border border-slate-200 object-cover" />)}
-          </div>
-        )}
-      </div>
-      <div>
-        <p className="text-sm text-slate-500">
-          <Link href="/products" className="hover:text-brand">Products</Link>
-          {brand && <> / <Link href={`/products?brand=${brand.slug}`} className="hover:text-brand">{brand.name}</Link></>}
-          {cat && <> / <Link href={`/products?category=${cat.slug}`} className="hover:text-brand">{cat.name}</Link></>}
-        </p>
-        <h1 className="mt-2 text-3xl font-extrabold">{p.name}</h1>
-        <p className="mt-1 text-sm text-slate-500">SKU: {p.sku}</p>
-        <div className="mt-4 flex items-baseline gap-3">
-          <span className="text-3xl font-bold">₹{p.price}</span>
-          {off > 0 && <><s className="text-slate-400">₹{p.mrp}</s><span className="font-semibold text-green-600">{off}% off</span></>}
+    <main className="mx-auto max-w-6xl px-4 py-10">
+      <p className="text-sm text-slate-500">
+        <Link href="/products" className="hover:text-accent">All parts</Link>
+        {cat && <> / <Link href={`/products?category=${cat.slug}`} className="hover:text-accent">{cat.name}</Link></>}
+      </p>
+      <div className="mt-4 grid gap-10 md:grid-cols-2">
+        <div>
+          <div className="overflow-hidden rounded-2xl border border-slate-200"><Tile p={p} big /></div>
+          {p.images && p.images.length > 1 && (
+            <div className="mt-3 grid grid-cols-5 gap-2">
+              {p.images.slice(1).map((u) => <img key={u} src={u} alt="" className="aspect-square rounded border border-slate-200 object-cover" />)}
+            </div>
+          )}
         </div>
-        <p className={`mt-2 text-sm font-semibold ${p.stock > 0 ? "text-green-700" : "text-red-600"}`}>
-          {p.stock === 0 ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}
-        </p>
-        {p.stock > 0 && (
-          <AddToCart className="mt-5 w-full max-w-xs py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
-        )}
-        {p.warranty && <p className="mt-4 text-sm text-slate-600">Warranty: {p.warranty}</p>}
-        {specs.length > 0 && (
-          <table className="mt-6 w-full text-sm">
-            <tbody>
-              {specs.map(([k, v]) => (
-                <tr key={k} className="border-t border-slate-200"><td className="py-2 pr-4 font-medium text-slate-600">{k}</td><td>{String(v)}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <div>
+          {cat && <p className="text-xs font-semibold uppercase tracking-wider text-accent">{cat.name}</p>}
+          <h1 className="mt-1 text-3xl font-extrabold leading-tight">{p.name}</h1>
+          <p className="mt-1 text-sm text-slate-500">Part ref: {p.sku}</p>
+
+          <div className="mt-5"><Price p={p} big /></div>
+          {p.price != null && (
+            <p className={`mt-2 text-sm font-semibold ${p.stock > 0 ? "text-green-700" : "text-red-600"}`}>
+              {p.stock === 0 ? "Out of stock" : p.stock <= 5 ? `Only ${p.stock} left` : "In stock"}
+            </p>
+          )}
+          <div className="mt-5 flex max-w-sm flex-col gap-3">
+            {p.price == null ? (
+              <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="rounded-full bg-neutral-900 py-3 text-center font-semibold text-white hover:bg-black">Enquire about this part</Link>
+            ) : p.stock > 0 ? (
+              <AddToCart className="py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
+            ) : (
+              <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="rounded-full border border-neutral-900 py-3 text-center font-semibold hover:bg-neutral-900 hover:text-white">Ask when it is back</Link>
+            )}
+          </div>
+
+          <div className="mt-8">
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-500">Fits</h2>
+            {models.length ? (
+              <div className="flex flex-wrap gap-2">
+                {models.map((m) => <span key={m} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-800">{m}</span>)}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-600">Fitment not listed for this part. <Link href={`/contact?part=${encodeURIComponent(p.sku)}`} className="text-accent underline">Send us your model and VIN</Link> and we will confirm.</p>
+            )}
+          </div>
+
+          {p.description && <p className="mt-6 whitespace-pre-line text-slate-700">{p.description}</p>}
+
+          {(specs.length > 0 || p.warranty) && (
+            <table className="mt-6 w-full text-sm">
+              <tbody>
+                {specs.map(([k, v]) => (
+                  <tr key={k} className="border-t border-slate-200"><td className="w-40 py-2 pr-4 font-medium text-slate-500">{k}</td><td>{String(v)}</td></tr>
+                ))}
+                {p.warranty && <tr className="border-t border-slate-200"><td className="py-2 pr-4 font-medium text-slate-500">Warranty</td><td>{p.warranty}</td></tr>}
+              </tbody>
+            </table>
+          )}
+          <p className="mt-6 rounded-lg bg-slate-50 p-3 text-xs text-slate-500">Always confirm the part number and your car&apos;s VIN before ordering. See our <Link href="/refund-and-return-policy" className="underline">return policy</Link>.</p>
+        </div>
       </div>
+
+      {related.length > 0 && (
+        <section className="mt-16">
+          <h2 className="mb-5 text-xl font-bold">More in {cat?.name}</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{related.map((r) => <ProductCard key={r.id} p={r} />)}</div>
+        </section>
+      )}
     </main>
   );
 }

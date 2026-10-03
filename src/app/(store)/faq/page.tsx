@@ -12,7 +12,7 @@ export default async function Faq() {
           {faqs.map((f) => (
             <details key={f.id} className="group p-4">
               <summary className="cursor-pointer list-none font-semibold marker:content-none">
-                <span className="mr-2 text-brand group-open:hidden">+</span><span className="mr-2 hidden text-brand group-open:inline">−</span>{f.question}
+                <span className="mr-2 text-accent group-open:hidden">+</span><span className="mr-2 hidden text-accent group-open:inline">−</span>{f.question}
               </summary>
               <p className="mt-2 whitespace-pre-line pl-5 text-slate-600">{f.answer}</p>
             </details>

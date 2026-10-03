@@ -9,11 +9,15 @@ async function save(fd: FormData) {
   "use server";
   const sb = await requireAdmin();
   const id = String(fd.get("id"));
-  const num = (k: string) => {
-    const n = Number(fd.get(k));
+  const money = (k: string) => {
+    const v = String(fd.get(k) ?? "").trim();
+    if (!v) return null; // empty price = "Price on request"
+    const n = Number(v);
     if (!Number.isFinite(n) || n < 0) throw new Error(`Invalid ${k}`);
     return n;
   };
+  const stock = Math.floor(Number(fd.get("stock") ?? 0));
+  if (!Number.isFinite(stock) || stock < 0) throw new Error("Invalid stock");
 
   // keep existing images minus the ticked ones, then append uploads
   const removed = new Set(fd.getAll("remove").map(String));
@@ -31,10 +35,10 @@ async function save(fd: FormData) {
     sku: String(fd.get("sku")).trim(),
     name: String(fd.get("name")).trim(),
     category_id: fd.get("category_id") ? Number(fd.get("category_id")) : null,
-    brand_id: fd.get("brand_id") ? Number(fd.get("brand_id")) : null,
-    price: num("price"),
-    mrp: fd.get("mrp") ? num("mrp") : null,
-    stock: Math.floor(num("stock")),
+    description: String(fd.get("description") || "").trim() || null,
+    price: money("price"),
+    mrp: money("mrp"),
+    stock,
     warranty: String(fd.get("warranty") || "") || null,
     // one "Key: Value" per line
     specs: Object.fromEntries(
@@ -47,24 +51,43 @@ async function save(fd: FormData) {
     active: fd.get("active") === "on",
     images,
   };
-  const { error } = id === "new" ? await sb.from("products").insert(row) : await sb.from("products").update(row).eq("id", id);
-  if (error) throw new Error(error.message);
+
+  let pid = Number(id);
+  if (id === "new") {
+    const { data: brand } = await sb.from("brands").select("id").eq("slug", "mercedes-benz").maybeSingle();
+    const { data, error } = await sb.from("products").insert({ ...row, brand_id: brand?.id ?? null }).select("id").single();
+    if (error) throw new Error(error.message);
+    pid = data.id;
+  } else {
+    const { error } = await sb.from("products").update(row).eq("id", pid);
+    if (error) throw new Error(error.message);
+  }
+
+  // fitment: replace the product's model list with the ticked boxes
+  const modelIds = fd.getAll("models").map(Number).filter(Number.isInteger);
+  const { error: delErr } = await sb.from("product_fitment").delete().eq("product_id", pid);
+  if (delErr) throw new Error(delErr.message);
+  if (modelIds.length) {
+    const { error } = await sb.from("product_fitment").insert(modelIds.map((model_id) => ({ product_id: pid, model_id })));
+    if (error) throw new Error(error.message);
+  }
   redirect("/admin/products");
 }
 
 export default async function ProductForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sb = await requireAdmin();
-  const { data: categories } = await sb.from("categories").select("id, name").order("name");
-  const { data: brands } = await sb.from("brands").select("id, name").order("name");
-  const { data: p } = id === "new" ? { data: null } : await sb.from("products").select("*").eq("id", id).single();
+  const { data: categories } = await sb.from("categories").select("id, name").order("sort").order("name");
+  const { data: models } = await sb.from("models").select("id, name").order("sort").order("name");
+  const { data: p } = id === "new" ? { data: null } : await sb.from("products").select("*, product_fitment(model_id)").eq("id", id).single();
+  const fits = new Set<number>((p?.product_fitment ?? []).map((f: { model_id: number }) => f.model_id));
   const input = "w-full rounded border border-slate-300 px-3 py-2";
   return (
     <form action={save} className="max-w-2xl space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-      <h1 className="text-2xl font-bold">{p ? "Edit product" : "Add product"}</h1>
+      <h1 className="text-2xl font-bold">{p ? "Edit part" : "Add part"}</h1>
       <input type="hidden" name="id" value={id} />
       <div className="grid grid-cols-2 gap-4">
-        <label className="text-sm">SKU<input name="sku" required defaultValue={p?.sku} className={input} /></label>
+        <label className="text-sm">Part ref / SKU<input name="sku" required defaultValue={p?.sku} className={input} /></label>
         <label className="text-sm">Category
           <select name="category_id" defaultValue={p?.category_id ?? ""} className={input}>
             <option value="">—</option>
@@ -72,21 +95,30 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
           </select>
         </label>
       </div>
-      <label className="block text-sm">Brand
-        <select name="brand_id" defaultValue={p?.brand_id ?? ""} className={input}>
-          <option value="">—</option>
-          {brands?.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-        </select>
-      </label>
       <label className="block text-sm">Name<input name="name" required defaultValue={p?.name} className={input} /></label>
+      <label className="block text-sm">Description (optional)
+        <textarea name="description" rows={3} defaultValue={p?.description ?? ""} className={input} />
+      </label>
       <div className="grid grid-cols-3 gap-4">
-        <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" required defaultValue={p?.price} className={input} /></label>
+        <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = on request" className={input} /></label>
         <label className="text-sm">MRP (₹)<input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={input} /></label>
         <label className="text-sm">Stock<input name="stock" type="number" min="0" step="1" required defaultValue={p?.stock ?? 0} className={input} /></label>
       </div>
-      <label className="block text-sm">Warranty<input name="warranty" defaultValue={p?.warranty ?? ""} placeholder="e.g. 3 years" className={input} /></label>
-      <label className="block text-sm">Specifications (one per line, e.g. Material: Steel)
-        <textarea name="specs" rows={4} defaultValue={Object.entries(p?.specs ?? {}).map(([k, v]) => `${k}: ${v}`).join("\n")} className={input} />
+      <p className="-mt-2 text-xs text-slate-500">Leave Price empty to show &quot;Price on request&quot; with an Enquire button. Customers can only add to cart once there is a price and stock.</p>
+
+      <fieldset className="text-sm">
+        <legend className="mb-1">Fits these models</legend>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
+          {models?.map((m) => (
+            <label key={m.id} className="flex items-center gap-1.5"><input type="checkbox" name="models" value={m.id} defaultChecked={fits.has(m.id)} /> {m.name}</label>
+          ))}
+          {!models?.length && <span className="text-slate-500">No models yet. <Link href="/admin/models" className="text-accent underline">Add models</Link></span>}
+        </div>
+      </fieldset>
+
+      <label className="block text-sm">Warranty<input name="warranty" defaultValue={p?.warranty ?? ""} placeholder="e.g. 12 months" className={input} /></label>
+      <label className="block text-sm">Specifications (one per line, e.g. Position: Front)
+        <textarea name="specs" rows={5} defaultValue={Object.entries(p?.specs ?? {}).map(([k, v]) => `${k}: ${v}`).join("\n")} className={input} />
       </label>
       <div className="text-sm">
         Images

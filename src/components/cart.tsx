@@ -54,7 +54,7 @@ export const useCart = () => {
 export function CartBadge() {
   const { count } = useCart();
   return count > 0 ? (
-    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-xs font-bold text-brand">{count}</span>
+    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-xs font-bold text-accent">{count}</span>
   ) : null;
 }
 

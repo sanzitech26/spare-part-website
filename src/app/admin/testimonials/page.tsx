@@ -23,7 +23,7 @@ export default async function AdminTestimonials() {
     <div className="max-w-3xl space-y-4">
       <h1 className="text-2xl font-bold">Testimonials</h1>
       <details className="rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer font-semibold text-brand">+ Add testimonial</summary>
+        <summary className="cursor-pointer font-semibold text-accent">+ Add testimonial</summary>
         <form action={save} className="mt-3 space-y-3">{Fields({})}</form>
       </details>
       {data?.map((t) => (

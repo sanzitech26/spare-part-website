@@ -26,7 +26,7 @@ export default async function AdminPosts() {
     <div className="max-w-3xl space-y-4">
       <h1 className="text-2xl font-bold">Blog posts</h1>
       <details className="rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer font-semibold text-brand">+ New post</summary>
+        <summary className="cursor-pointer font-semibold text-accent">+ New post</summary>
         <form action={save} className="mt-3 space-y-3">{Fields({})}</form>
       </details>
       {posts?.map((p) => (

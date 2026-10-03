@@ -11,7 +11,7 @@ export default async function Testimonials() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((t) => (
             <figure key={t.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="text-orange-500" aria-label={`${t.rating} out of 5 stars`}>{"★".repeat(t.rating)}<span className="text-slate-300">{"★".repeat(5 - t.rating)}</span></div>
+              <div className="text-amber-500" aria-label={`${t.rating} out of 5 stars`}>{"★".repeat(t.rating)}<span className="text-slate-300">{"★".repeat(5 - t.rating)}</span></div>
               <blockquote className="mt-2 text-slate-700">“{t.text}”</blockquote>
               <figcaption className="mt-3 text-sm font-semibold">{t.name}</figcaption>
             </figure>

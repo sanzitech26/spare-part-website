@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BRAND NAME — Genuine Two-Wheeler Spare Parts",
-  description: "100% original spare parts for every major two-wheeler brand.",
+  title: "BRAND NAME — Genuine Mercedes-Benz Spare Parts",
+  description: "Genuine and OEM Mercedes-Benz spare parts, matched to your model: engine, electronics, lighting, body and wheels.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -12,7 +12,7 @@ export default function CartPage() {
     <main className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="mb-6 text-3xl font-extrabold">Your cart</h1>
       {!items.length ? (
-        <p>Your cart is empty. <Link href="/products" className="text-brand underline">Browse products</Link></p>
+        <p>Your cart is empty. <Link href="/products" className="text-accent underline">Browse products</Link></p>
       ) : (
         <div className="grid gap-8 md:grid-cols-[1fr_320px]">
           <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
@@ -20,7 +20,7 @@ export default function CartPage() {
               <li key={i.id} className="flex items-center gap-4 p-4">
                 {i.image ? <img src={i.image} alt="" className="h-20 w-20 rounded object-cover" /> : <div className="h-20 w-20 rounded bg-slate-100" />}
                 <div className="flex-1">
-                  <Link href={`/products/${encodeURIComponent(i.sku)}`} className="font-medium hover:text-brand">{i.name}</Link>
+                  <Link href={`/products/${encodeURIComponent(i.sku)}`} className="font-medium hover:text-accent">{i.name}</Link>
                   <p className="text-sm text-slate-500">₹{i.price}</p>
                   <div className="mt-2 flex items-center gap-2 text-sm">
                     <button onClick={() => setQty(i.id, i.qty - 1)} className="h-7 w-7 rounded border" aria-label="Decrease">−</button>

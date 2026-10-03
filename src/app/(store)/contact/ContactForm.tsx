@@ -4,7 +4,7 @@ import { sendContact } from "./actions";
 
 const input = "w-full rounded border border-slate-300 px-3 py-2";
 
-export default function ContactForm() {
+export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: string }) {
   const [state, action, pending] = useActionState(sendContact, null);
   if (state?.ok) return <p className="rounded-xl bg-green-50 p-6 text-green-800">Thanks! We have received your message and will reply soon.</p>;
   return (
@@ -16,7 +16,7 @@ export default function ContactForm() {
         <label className="text-sm">Phone<input name="phone" type="tel" className={input} /></label>
       </div>
       <label className="block text-sm">Email *<input name="email" type="email" required className={input} /></label>
-      <label className="block text-sm">Message *<textarea name="message" required rows={5} className={input} /></label>
+      <label className="block text-sm">Message *<textarea name="message" required rows={6} defaultValue={defaultMessage} className={input} /></label>
       {state?.error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={pending} className="rounded-full bg-brand px-6 py-2.5 font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
         {pending ? "Sending…" : "Send message"}

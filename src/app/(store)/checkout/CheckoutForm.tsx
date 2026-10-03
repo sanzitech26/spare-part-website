@@ -13,7 +13,7 @@ export default function CheckoutForm() {
   const subtotal = items.reduce((n, i) => n + i.price * i.qty, 0);
   const shipping = shippingFor(subtotal);
 
-  if (!items.length) return <p>Your cart is empty. <Link href="/products" className="text-brand underline">Browse products</Link></p>;
+  if (!items.length) return <p>Your cart is empty. <Link href="/products" className="text-accent underline">Browse products</Link></p>;
   return (
     <form action={action} className="grid gap-8 md:grid-cols-[1fr_340px]">
       <input type="hidden" name="items" value={JSON.stringify(items.map((i) => ({ id: i.id, qty: i.qty })))} />

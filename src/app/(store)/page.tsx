@@ -1,55 +1,91 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { CARD_SELECT, type P } from "@/components/ProductCard";
 
-const HERO = "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1800&q=70&auto=format&fit=crop";
-const perks = ["100% Original Parts", "Free shipping over ₹999", "7-day easy returns", "Secure payments"];
+const trust = [
+  ["Genuine & OEM", "Sourced parts, clearly labelled"],
+  ["Fitment help", "We confirm the part fits your car"],
+  ["Pan-India delivery", "Packed securely, tracked shipping"],
+  ["Easy returns", "7 days on unused parts"],
+];
 
 export default async function Home() {
   const sb = await supabase();
-  const [{ data: brands }, { data: products }] = await Promise.all([
-    sb.from("brands").select("name, slug").order("name"),
-    sb.from("products").select("id, sku, name, price, mrp, stock, images").eq("active", true).order("id", { ascending: false }).limit(8),
+  const [{ data: categories }, { data: models }, { data: products }] = await Promise.all([
+    sb.from("categories").select("name, slug, products(count)").order("sort").order("name"),
+    sb.from("models").select("name, slug").order("sort").order("name"),
+    sb.from("products").select(CARD_SELECT).eq("active", true).order("id", { ascending: false }).limit(8),
   ]);
+
   return (
     <main>
-      <section className="relative">
-        <img src={HERO} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent" />
-        <div className="relative mx-auto max-w-6xl px-4 py-24 text-white">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-orange-400">Genuine two-wheeler parts</p>
-          <h1 className="max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl">100% original spare parts for your ride.</h1>
-          <p className="mt-4 max-w-md text-slate-200">Find the exact part for your bike by brand, model and year.</p>
-          <Link href="/products" className="mt-8 inline-block rounded-full bg-brand px-6 py-3 font-semibold hover:bg-brand-dark">Shop all parts</Link>
+      <section className="relative overflow-hidden bg-neutral-950 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.25),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_55%,rgba(255,255,255,0.04)_55%,rgba(255,255,255,0.04)_57%,transparent_57%)]" />
+        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:py-28">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Genuine &amp; OEM · Mercedes-Benz</p>
+          <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.1] sm:text-6xl">The right part for your Mercedes.</h1>
+          <p className="mt-5 max-w-xl text-lg text-slate-300">Engines, electronics, lighting, bodywork and wheels for A-Class to Sprinter, matched to your model.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/products" className="rounded-full bg-white px-7 py-3 font-semibold text-neutral-900 hover:bg-slate-200">Browse all parts</Link>
+            <Link href="/contact" className="rounded-full border border-slate-500 px-7 py-3 font-semibold text-white hover:border-white">Ask about fitment</Link>
+          </div>
+          <div className="mt-10">
+            <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">Shop by model</p>
+            <div className="flex flex-wrap gap-2">
+              {models?.map((m) => (
+                <Link key={m.slug} href={`/products?model=${m.slug}`} className="rounded-full border border-neutral-700 bg-neutral-900/60 px-4 py-1.5 text-sm text-slate-200 backdrop-blur hover:border-slate-300 hover:text-white">
+                  {m.name}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="border-b border-slate-200 bg-slate-50">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-4 text-center text-sm font-medium text-slate-700 sm:grid-cols-4">
-          {perks.map((p) => <div key={p}>{p}</div>)}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="mb-6 text-2xl font-bold">Shop by brand</h2>
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-          {brands?.map((b) => (
-            <Link key={b.slug} href={`/products?brand=${b.slug}`} className="rounded-xl border border-slate-200 bg-white p-5 text-center font-semibold text-slate-800 shadow-sm transition hover:border-brand hover:text-brand hover:shadow-md">
-              {b.name}
-            </Link>
+      <section className="border-b border-slate-200 bg-silver">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-6 lg:grid-cols-4">
+          {trust.map(([t, s]) => (
+            <div key={t}><p className="font-semibold text-slate-900">{t}</p><p className="text-sm text-slate-600">{s}</p></div>
           ))}
         </div>
       </section>
 
-      <section className="bg-slate-50 py-12">
+      <section className="mx-auto max-w-6xl px-4 py-14">
+        <div className="mb-6 flex items-end justify-between">
+          <h2 className="text-2xl font-bold">Shop by category</h2>
+          <Link href="/products" className="text-sm font-medium text-accent hover:underline">View all →</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {categories?.map((c) => {
+            const n = (c.products as unknown as { count: number }[])?.[0]?.count ?? 0;
+            return (
+              <Link key={c.slug} href={`/products?category=${c.slug}`} className="group rounded-xl border border-slate-200 bg-white p-5 transition hover:border-slate-900 hover:shadow-md">
+                <p className="font-semibold text-slate-900">{c.name}</p>
+                <p className="mt-1 text-sm text-slate-500">{n} {n === 1 ? "part" : "parts"}</p>
+                <p className="mt-3 text-sm font-medium text-accent opacity-0 transition group-hover:opacity-100">View parts →</p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="bg-silver py-14">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-6 text-2xl font-bold">Latest parts</h2>
+          <h2 className="mb-6 text-2xl font-bold">Featured parts</h2>
           {products?.length ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{(products as unknown as P[]).map((p) => <ProductCard key={p.id} p={p} />)}</div>
           ) : (
-            <p className="text-slate-500">Products will appear here once they are added in the admin panel.</p>
+            <p className="text-slate-500">Parts will appear here once they are added in the admin panel.</p>
           )}
+        </div>
+      </section>
+
+      <section className="bg-neutral-900 py-12 text-center text-white">
+        <div className="mx-auto max-w-2xl px-4">
+          <h2 className="text-2xl font-bold">Can&apos;t find your part?</h2>
+          <p className="mt-2 text-slate-300">Send us your model, year and VIN and we will find the exact part for you.</p>
+          <Link href="/contact" className="mt-6 inline-block rounded-full bg-white px-7 py-3 font-semibold text-neutral-900 hover:bg-slate-200">Contact us</Link>
         </div>
       </section>
     </main>

@@ -1,9 +1,6 @@
-export const brands = ["Hero", "Bajaj", "Honda", "TVS", "Yamaha", "Royal Enfield", "KTM", "Suzuki", "Mahindra"];
-export const brandSlug = (b: string) => b.toLowerCase().replace(/ /g, "-");
-
 // Primary links stay visible; the rest live under "More" (desktop) / the menu (mobile). Policies are repeated in the footer.
+// Categories and car models come from the database (see Header), so adding one in admin adds it to the menu.
 export const primary = [
-  { href: "/products", label: "Products" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
