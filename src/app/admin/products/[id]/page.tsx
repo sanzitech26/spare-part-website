@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAdmin, serviceDb } from "@/lib/admin";
+import SubmitButton from "@/components/admin/SubmitButton";
+import { Card, PageHeader, btn, btnGhost, field, labelCls } from "@/components/admin/ui";
 
 const BUCKET = "product-images";
 
@@ -11,7 +13,7 @@ async function save(fd: FormData) {
   const id = String(fd.get("id"));
   const money = (k: string) => {
     const v = String(fd.get(k) ?? "").trim();
-    if (!v) return null; // empty price = "Price on request"
+    if (!v) return null; // empty price = "Price coming soon"
     const n = Number(v);
     if (!Number.isFinite(n) || n < 0) throw new Error(`Invalid ${k}`);
     return n;
@@ -60,7 +62,7 @@ async function save(fd: FormData) {
     if (error) throw new Error(error.message);
   }
 
-  // fitment: replace the product's model list with the ticked boxes
+  // fitment: replace the product's model list with the ticked chips
   const modelIds = fd.getAll("models").map(Number).filter(Number.isInteger);
   const { error: delErr } = await sb.from("product_fitment").delete().eq("product_id", pid);
   if (delErr) throw new Error(delErr.message);
@@ -78,63 +80,96 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
   const { data: models } = await sb.from("models").select("id, name").order("sort").order("name");
   const { data: p } = id === "new" ? { data: null } : await sb.from("products").select("*, product_fitment(model_id)").eq("id", id).single();
   const fits = new Set<number>((p?.product_fitment ?? []).map((f: { model_id: number }) => f.model_id));
-  const input = "w-full rounded border border-slate-300 px-3 py-2";
+
   return (
-    <form action={save} className="max-w-2xl space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-      <h1 className="text-2xl font-bold">{p ? "Edit part" : "Add part"}</h1>
+    <form action={save}>
       <input type="hidden" name="id" value={id} />
-      <div className="grid grid-cols-2 gap-4">
-        <label className="text-sm">Part ref / SKU<input name="sku" required defaultValue={p?.sku} className={input} /></label>
-        <label className="text-sm">Category
-          <select name="category_id" defaultValue={p?.category_id ?? ""} className={input}>
-            <option value="">—</option>
-            {categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </label>
-      </div>
-      <label className="block text-sm">Name<input name="name" required defaultValue={p?.name} className={input} /></label>
-      <label className="block text-sm">Description (optional)
-        <textarea name="description" rows={3} defaultValue={p?.description ?? ""} className={input} />
-      </label>
-      <div className="grid grid-cols-2 gap-4">
-        <label className="text-sm">Price (₹)<input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={input} /></label>
-        <label className="text-sm">MRP (₹)<input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={input} /></label>
-      </div>
-      <p className="-mt-2 text-xs text-slate-500">Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
-
-      <fieldset className="text-sm">
-        <legend className="mb-1">Fits these models</legend>
-        <div className="flex flex-wrap gap-x-4 gap-y-2">
-          {models?.map((m) => (
-            <label key={m.id} className="flex items-center gap-1.5"><input type="checkbox" name="models" value={m.id} defaultChecked={fits.has(m.id)} /> {m.name}</label>
-          ))}
-          {!models?.length && <span className="text-slate-500">No models yet. <Link href="/admin/models" className="text-accent underline">Add models</Link></span>}
+      <PageHeader title={p ? "Edit part" : "Add part"} subtitle={p ? `${p.sku}` : "New part for the catalog"}>
+        <div className="flex gap-2">
+          <Link href="/admin/products" className={btnGhost}>Cancel</Link>
+          <SubmitButton className={btn}>Save part</SubmitButton>
         </div>
-      </fieldset>
+      </PageHeader>
 
-      <label className="block text-sm">Warranty<input name="warranty" defaultValue={p?.warranty ?? ""} placeholder="e.g. 12 months" className={input} /></label>
-      <label className="block text-sm">Specifications (one per line, e.g. Position: Front)
-        <textarea name="specs" rows={5} defaultValue={Object.entries(p?.specs ?? {}).map(([k, v]) => `${k}: ${v}`).join("\n")} className={input} />
-      </label>
-      <div className="text-sm">
-        Images
-        {p?.images?.length > 0 && (
-          <div className="my-2 flex flex-wrap gap-3">
-            {p.images.map((u: string) => (
-              <label key={u} className="text-center text-xs">
-                <img src={u} alt="" className="h-20 w-20 rounded object-cover" />
-                <input type="hidden" name="keep" value={u} />
-                <input type="checkbox" name="remove" value={u} /> remove
-              </label>
-            ))}
-          </div>
-        )}
-        <input name="files" type="file" accept="image/*" multiple className="mt-1 block" />
-      </div>
-      <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="active" defaultChecked={p?.active ?? true} /> Visible in store (untick to hide instead of deleting)</label>
-      <div className="flex gap-3">
-        <button className="rounded bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-dark">Save</button>
-        <Link href="/admin/products" className="rounded border border-slate-300 px-5 py-2">Cancel</Link>
+      <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
+        <div className="space-y-5">
+          <Card className="adm-in space-y-4">
+            <h2 className="font-semibold text-slate-900">Details</h2>
+            <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
+              <label className="space-y-1.5"><span className={labelCls}>Part ref / SKU</span><input name="sku" required defaultValue={p?.sku} placeholder="MB-054" className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>Name</span><input name="name" required defaultValue={p?.name} className={field} /></label>
+            </div>
+            <label className="block space-y-1.5"><span className={labelCls}>Description (optional)</span><textarea name="description" rows={3} defaultValue={p?.description ?? ""} className={field} /></label>
+          </Card>
+
+          <Card className="adm-in space-y-4">
+            <h2 className="font-semibold text-slate-900">Pricing</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <label className="space-y-1.5"><span className={labelCls}>Price (₹)</span><input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>MRP (₹, optional)</span><input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={field} /></label>
+            </div>
+            <p className="text-xs text-slate-500">Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
+          </Card>
+
+          <Card className="adm-in space-y-4">
+            <h2 className="font-semibold text-slate-900">Specifications</h2>
+            <label className="block space-y-1.5"><span className={labelCls}>Warranty</span><input name="warranty" defaultValue={p?.warranty ?? ""} placeholder="e.g. 12 months" className={field} /></label>
+            <label className="block space-y-1.5">
+              <span className={labelCls}>Specs (one per line, e.g. Position: Front)</span>
+              <textarea name="specs" rows={6} defaultValue={Object.entries(p?.specs ?? {}).map(([k, v]) => `${k}: ${v}`).join("\n")} className={`${field} font-mono`} />
+            </label>
+          </Card>
+        </div>
+
+        <div className="space-y-5">
+          <Card className="adm-in space-y-4">
+            <label className="flex cursor-pointer items-center justify-between gap-3">
+              <span><span className="block text-sm font-semibold text-slate-900">Visible in store</span><span className="text-xs text-slate-500">Turn off to hide instead of deleting</span></span>
+              <span className="relative inline-flex">
+                <input type="checkbox" name="active" defaultChecked={p?.active ?? true} className="peer sr-only" />
+                <span className="h-6 w-11 rounded-full bg-slate-200 transition peer-checked:bg-gradient-to-r peer-checked:from-indigo-600 peer-checked:to-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500/50 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" />
+              </span>
+            </label>
+            <label className="block space-y-1.5">
+              <span className={labelCls}>Category</span>
+              <select name="category_id" defaultValue={p?.category_id ?? ""} className={field}>
+                <option value="">—</option>
+                {categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </label>
+          </Card>
+
+          <Card className="adm-in">
+            <h2 className="mb-3 font-semibold text-slate-900">Fits these models</h2>
+            <div className="flex flex-wrap gap-2">
+              {models?.map((m) => (
+                <label key={m.id} className="cursor-pointer">
+                  <input type="checkbox" name="models" value={m.id} defaultChecked={fits.has(m.id)} className="peer sr-only" />
+                  <span className="inline-block rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-sm text-slate-700 transition peer-checked:border-indigo-400 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500/50">{m.name}</span>
+                </label>
+              ))}
+              {!models?.length && <span className="text-sm text-slate-500">No models yet. <Link href="/admin/models" className="text-indigo-600 underline">Add models</Link></span>}
+            </div>
+          </Card>
+
+          <Card className="adm-in">
+            <h2 className="mb-3 font-semibold text-slate-900">Images</h2>
+            {p?.images?.length > 0 && (
+              <div className="mb-3 grid grid-cols-3 gap-2">
+                {p.images.map((u: string) => (
+                  <label key={u} className="group relative block cursor-pointer overflow-hidden rounded-lg ring-1 ring-slate-200">
+                    <img src={u} alt="" className="aspect-square w-full object-cover" />
+                    <input type="hidden" name="keep" value={u} />
+                    <input type="checkbox" name="remove" value={u} className="peer sr-only" />
+                    <span className="absolute inset-0 flex items-center justify-center bg-rose-600/80 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 peer-checked:opacity-100">Remove ✓</span>
+                  </label>
+                ))}
+              </div>
+            )}
+            <input name="files" type="file" accept="image/*" multiple className="block w-full text-sm text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200" />
+            <p className="mt-2 text-xs text-slate-500">Click an image to mark it for removal, then save.</p>
+          </Card>
+        </div>
       </div>
     </form>
   );

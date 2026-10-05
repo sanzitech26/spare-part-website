@@ -1,39 +1,50 @@
 import { requireAdmin } from "@/lib/admin";
+import SubmitButton from "@/components/admin/SubmitButton";
+import { Badge, Card, Icon, PageHeader, btn, btnDanger, field, fieldBase } from "@/components/admin/ui";
 import { deleteRow, saveRow } from "../content/actions";
 
-const input = "w-full rounded border border-slate-300 px-3 py-2 text-sm";
+type T = { id: number; name: string; text: string; rating: number; active: boolean };
 
 export default async function AdminTestimonials() {
   const sb = await requireAdmin();
   const { data } = await sb.from("testimonials").select("*").order("id", { ascending: false });
   const save = saveRow.bind(null, "testimonials"), del = deleteRow.bind(null, "testimonials");
-  const Fields = ({ t }: { t?: { id: number; name: string; text: string; rating: number; active: boolean } }) => (
+  const Fields = ({ t }: { t?: T }) => (
     <>
       {t && <input type="hidden" name="id" value={t.id} />}
-      <input name="name" required placeholder="Customer name" defaultValue={t?.name} className={input} />
-      <textarea name="text" required rows={3} placeholder="What they said" defaultValue={t?.text} className={input} />
-      <div className="flex items-center gap-4 text-sm">
-        <label>Rating <input name="rating" type="number" min={1} max={5} defaultValue={t?.rating ?? 5} className="w-16 rounded border border-slate-300 px-2 py-1" /></label>
-        <label><input type="checkbox" name="active" defaultChecked={t?.active ?? true} /> Visible</label>
-        <button className="ml-auto rounded bg-brand px-4 py-1.5 font-semibold text-white hover:bg-brand-dark">Save</button>
+      <input name="name" required placeholder="Customer name" defaultValue={t?.name} className={field} />
+      <textarea name="text" required rows={3} placeholder="What they said" defaultValue={t?.text} className={field} />
+      <div className="flex flex-wrap items-center gap-4 text-sm text-slate-700">
+        <label className="flex items-center gap-2">Rating <input name="rating" type="number" min={1} max={5} defaultValue={t?.rating ?? 5} className={`${fieldBase} w-20`} /></label>
+        <label className="flex items-center gap-2"><input type="checkbox" name="active" defaultChecked={t?.active ?? true} className="h-4 w-4 accent-indigo-600" /> Visible</label>
+        <SubmitButton className={`${btn} ml-auto`}>Save</SubmitButton>
       </div>
     </>
   );
   return (
-    <div className="max-w-3xl space-y-4">
-      <h1 className="text-2xl font-bold">Testimonials</h1>
-      <details className="rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer font-semibold text-accent">+ Add testimonial</summary>
-        <form action={save} className="mt-3 space-y-3">{Fields({})}</form>
+    <div className="max-w-3xl">
+      <PageHeader title="Testimonials" subtitle="Customer reviews shown on the public site" />
+      <details className="adm-in mb-4 rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+        <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold text-indigo-700"><Icon name="plus" className="h-4 w-4" /> Add testimonial</summary>
+        <form action={save} className="mt-4 space-y-3">{Fields({})}</form>
       </details>
-      {data?.map((t) => (
-        <details key={t.id} className="rounded-xl border border-slate-200 bg-white p-4">
-          <summary className="cursor-pointer font-medium">{t.name} · {"★".repeat(t.rating)} {!t.active && <span className="ml-2 text-xs text-slate-400">(hidden)</span>}</summary>
-          <form action={save} className="mt-3 space-y-3">{Fields({ t })}</form>
-          <form action={del} className="mt-2"><input type="hidden" name="id" value={t.id} /><button className="text-sm text-red-600 hover:underline">Delete</button></form>
-        </details>
-      ))}
-      {!data?.length && <p className="text-slate-500">No testimonials yet.</p>}
+      <div className="space-y-3">
+        {data?.map((t) => (
+          <Card key={t.id} className="adm-in !p-0">
+            <details className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
+                <span className="font-medium text-slate-900">{t.name} <span className="ml-2 text-amber-400">{"★".repeat(t.rating)}</span></span>
+                <span className="flex items-center gap-2">{!t.active && <Badge>hidden</Badge>}<span className="text-slate-500 transition group-open:rotate-180">▾</span></span>
+              </summary>
+              <div className="space-y-3 border-t border-slate-200 p-4">
+                <form action={save} className="space-y-3">{Fields({ t })}</form>
+                <form action={del}><input type="hidden" name="id" value={t.id} /><button className={btnDanger}>Delete testimonial</button></form>
+              </div>
+            </details>
+          </Card>
+        ))}
+        {!data?.length && <Card className="py-10 text-center text-sm text-slate-500">No testimonials yet.</Card>}
+      </div>
     </div>
   );
 }

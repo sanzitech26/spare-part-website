@@ -7,7 +7,17 @@
   --color-accent: #0e7490;      /* links, hover states, focus */
   --color-silver: #eef0f3;      /* soft panels */
   --font-sans: var(--font-geist-sans);
+
+  /* Admin (light dashboard). Token names kept from the dark version so every admin class still resolves. */
+  --color-ink-950: #f4f6fb;     /* page */
+  --color-ink-900: #ffffff;     /* sidebar */
+  --color-ink-800: #ffffff;     /* panels */
+  --color-ink-700: #f8fafc;     /* inputs, raised */
+  --color-line: #e2e8f0;        /* borders */
 }
+
+@keyframes adm-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.adm-in { animation: adm-fade 0.35s ease-out both; }
 
 :root { color-scheme: light; }
 
