@@ -39,11 +39,11 @@ export default function CheckoutForm() {
       <aside className="h-fit space-y-3 rounded-xl border border-slate-200 bg-white p-6 text-sm">
         <h2 className="text-xl font-bold">Order summary</h2>
         {items.map((i) => (
-          <div key={i.id} className="flex justify-between gap-2"><span>{i.qty} × {i.name}</span><span>₹{i.price * i.qty}</span></div>
+          <div key={i.id} className="flex justify-between gap-2"><span>{i.qty} × {i.name}</span><span>${i.price * i.qty}</span></div>
         ))}
-        <div className="flex justify-between border-t pt-3"><span>Subtotal</span><span>₹{subtotal}</span></div>
-        <div className="flex justify-between"><span>Shipping</span><span>{shipping ? `₹${shipping}` : "Free"}</span></div>
-        <div className="flex justify-between text-lg font-bold"><span>Total</span><span>₹{subtotal + shipping}</span></div>
+        <div className="flex justify-between border-t pt-3"><span>Subtotal</span><span>${subtotal}</span></div>
+        <div className="flex justify-between"><span>Shipping</span><span>{shipping ? `$${shipping}` : "Free"}</span></div>
+        <div className="flex justify-between text-lg font-bold"><span>Total</span><span>${subtotal + shipping}</span></div>
         {state?.error && <p className="rounded bg-red-50 p-2 text-red-700">{state.error}</p>}
         <button disabled={pending} className="w-full rounded-full bg-brand py-3 font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
           {pending ? "Placing order…" : "Place order"}

@@ -17,7 +17,7 @@ export const one = <T,>(v: Rel<T> | undefined): T | null => (Array.isArray(v) ? 
 export const modelNames = (p: P) => (p.product_fitment ?? []).map((f) => one(f.models)?.name).filter((n): n is string => !!n);
 export const discount = (p: { price: number | null; mrp: number | null }) =>
   p.price && p.mrp && p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0;
-export const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+export const fmt = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 // Placeholder tile colours per category (full class names so Tailwind can see them).
 const tints: Record<string, string> = {

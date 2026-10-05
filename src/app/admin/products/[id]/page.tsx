@@ -105,8 +105,8 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
           <Card className="adm-in space-y-4">
             <h2 className="font-semibold text-slate-900">Pricing</h2>
             <div className="grid grid-cols-2 gap-4">
-              <label className="space-y-1.5"><span className={labelCls}>Price (₹)</span><input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={field} /></label>
-              <label className="space-y-1.5"><span className={labelCls}>MRP (₹, optional)</span><input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>Price ($)</span><input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>MRP ($, optional)</span><input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={field} /></label>
             </div>
             <p className="text-xs text-slate-500">Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
           </Card>

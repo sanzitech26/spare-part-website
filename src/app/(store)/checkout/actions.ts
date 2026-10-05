@@ -35,12 +35,12 @@ export async function placeOrder(_prev: { error: string } | null, fd: FormData):
   const { data: order } = await db.from("orders").select("total, shipping, order_items(qty, unit_price, products(sku, name))").eq("id", id).single();
   if (order) {
     const lines = (order.order_items as unknown as { qty: number; unit_price: number; products: { sku: string; name: string } | { sku: string; name: string }[] }[])
-      .map((i) => { const p = Array.isArray(i.products) ? i.products[0] : i.products; return `${i.qty} x ${p?.name} (${p?.sku}) @ Rs ${i.unit_price} = Rs ${i.qty * i.unit_price}`; });
+      .map((i) => { const p = Array.isArray(i.products) ? i.products[0] : i.products; return `${i.qty} x ${p?.name} (${p?.sku}) @ $${i.unit_price} = $${i.qty * i.unit_price}`; });
     await sendMail({
       subject: `New order #${String(id).slice(0, 8)} from ${address.name}`,
       replyTo: address.email,
       text: [
-        `Order ${id}`, "", ...lines, "", `Shipping: Rs ${order.shipping}`, `TOTAL (pay on delivery): Rs ${order.total}`, "",
+        `Order ${id}`, "", ...lines, "", `Shipping: $${order.shipping}`, `TOTAL (pay on delivery): $${order.total}`, "",
         `Name: ${address.name}`, `Phone: ${address.phone}`, `Email: ${address.email}`,
         `Address: ${[address.line1, address.line2, address.city, address.state, address.pincode].filter(Boolean).join(", ")}`,
       ].join("\n"),
