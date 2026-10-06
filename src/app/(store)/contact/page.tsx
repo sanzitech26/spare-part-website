@@ -15,7 +15,7 @@ export default function Contact() {
         {/* ponytail: placeholder contact details; replace with the client's */}
         <p><b>Phone:</b> +91-XXXXXXXXXX</p>
         <p><b>Hours:</b> Mon–Sat, 10 AM – 7 PM</p>
-        <p><b>Email:</b> support@example.com</p>
+        <p><b>Email:</b> support@mbspareparts.co.uk</p>
         <p><b>Address:</b> Your shop address, City, State, PIN</p>
       </aside>
     </main>

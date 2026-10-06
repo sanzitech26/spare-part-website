@@ -34,7 +34,7 @@ export default async function Header() {
       <header className="sticky top-0 z-30 bg-neutral-900 text-slate-300 shadow-md">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <Link href="/" className="text-xl font-extrabold tracking-tight text-white">
-            BRAND<span className="font-light text-slate-400">NAME</span>
+            MBSpareParts<span className="font-light text-slate-400">.co.uk</span>
           </Link>
           <form action="/products" className="order-last w-full md:order-none md:w-auto md:flex-1">
             <input

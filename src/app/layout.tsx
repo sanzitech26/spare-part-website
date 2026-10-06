@@ -13,7 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BRAND NAME — Genuine Mercedes-Benz Spare Parts",
+  metadataBase: new URL("https://mbspareparts.co.uk"),
+  title: "MBSpareParts.co.uk — Genuine Mercedes-Benz Spare Parts",
   description: "Genuine and OEM Mercedes-Benz spare parts, matched to your model: engine, electronics, lighting, body and wheels.",
 };
 

@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="mt-auto bg-black text-sm text-slate-400">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-3">
         <div>
-          <p className="text-lg font-extrabold text-white">BRAND<span className="font-light text-slate-400">NAME</span></p>
+          <p className="text-lg font-extrabold text-white">MBSpareParts<span className="font-light text-slate-400">.co.uk</span></p>
           <p className="mt-2">Genuine and OEM spare parts for Mercedes-Benz. Not affiliated with or endorsed by Mercedes-Benz Group AG.</p>
         </div>
         <div>
@@ -25,7 +25,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <p className="border-t border-neutral-800 py-4 text-center">© {new Date().getFullYear()} BRAND NAME. All rights reserved. Photography from Unsplash.</p>
+      <p className="border-t border-neutral-800 py-4 text-center">© {new Date().getFullYear()} MBSpareParts.co.uk. All rights reserved. Photography from Unsplash.</p>
     </footer>
   );
 }

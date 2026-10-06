@@ -23,9 +23,9 @@ const groups = [
 function Brand() {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-sm font-black text-white shadow-md shadow-indigo-600/30">B</span>
+      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-sm font-black text-white shadow-md shadow-indigo-600/30">M</span>
       <div className="leading-tight">
-        <p className="text-sm font-bold text-slate-900">BRAND NAME</p>
+        <p className="text-sm font-bold text-slate-900">MBSpareParts.co.uk</p>
         <p className="text-[11px] uppercase tracking-widest text-slate-400">Admin</p>
       </div>
     </div>

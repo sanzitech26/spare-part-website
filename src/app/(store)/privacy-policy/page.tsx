@@ -6,7 +6,7 @@ export const metadata = { title: "Privacy policy" };
 export default function Privacy() {
   return (
     <Prose title="Privacy policy">
-      <p>This policy explains what personal information BRAND NAME collects and how we use it.</p>
+      <p>This policy explains what personal information MBSpareParts.co.uk collects and how we use it.</p>
       <h2>Information we collect</h2>
       <ul>
         <li>Account details: name, email address and password (stored securely, never in plain text).</li>
