@@ -13,9 +13,8 @@ export default function ContactForm() {
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="text-sm">Name *<input name="name" required className={input} /></label>
-        <label className="text-sm">Phone<input name="phone" type="tel" className={input} /></label>
+        <label className="text-sm">Email *<input name="email" type="email" required className={input} /></label>
       </div>
-      <label className="block text-sm">Email *<input name="email" type="email" required className={input} /></label>
       <label className="block text-sm">Message *<textarea name="message" required rows={6} className={input} /></label>
       {state?.error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={pending} className="rounded-full bg-brand px-6 py-2.5 font-semibold text-white hover:bg-brand-dark disabled:opacity-60">

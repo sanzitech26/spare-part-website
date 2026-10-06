@@ -10,7 +10,7 @@ export default function Privacy() {
       <h2>Information we collect</h2>
       <ul>
         <li>Account details: name, email address and password (stored securely, never in plain text).</li>
-        <li>Order details: delivery address, phone number and the items you buy.</li>
+        <li>Order details: delivery address, email and the items you buy.</li>
         <li>Messages you send us through the contact form.</li>
       </ul>
       <h2>How we use it</h2>

@@ -16,7 +16,7 @@ async function setStatus(fd: FormData) {
   revalidatePath("/admin/orders");
 }
 
-type Addr = { name?: string; phone?: string; email?: string; line1?: string; line2?: string; city?: string; state?: string; pincode?: string };
+type Addr = { name?: string; email?: string; line1?: string; line2?: string; city?: string; state?: string; pincode?: string };
 type Item = { qty: number; unit_price: number; products: { name: string; sku: string } | { name: string; sku: string }[] | null };
 
 export default async function Orders({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
@@ -66,7 +66,6 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
                 <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Customer</p>
                   <p className="font-medium text-slate-900">{a.name ?? "Guest"}</p>
-                  {a.phone && <p className="text-slate-700">{a.phone}</p>}
                   {a.email && <a href={`mailto:${a.email}`} className="text-indigo-600 hover:underline">{a.email}</a>}
                   <p className="mt-2 text-slate-400">{[a.line1, a.line2, a.city, a.state, a.pincode].filter(Boolean).join(", ")}</p>
                 </div>

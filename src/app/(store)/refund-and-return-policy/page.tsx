@@ -22,7 +22,7 @@ export default function Refunds() {
       <h2>Refunds</h2>
       <p>Once your return is received and inspected, refunds are issued to the original payment method, or by bank transfer for pay-on-delivery orders, within 7 working days.</p>
       <h2>How to request a return</h2>
-      <p>Use our <a href="/contact">contact page</a> or call us during support hours with your order number.</p>
+      <p>Use our <a href="/contact">contact page</a> or email us with your order number.</p>
     </Prose>
   );
 }

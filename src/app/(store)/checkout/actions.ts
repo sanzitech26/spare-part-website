@@ -9,10 +9,9 @@ export async function placeOrder(_prev: { error: string } | null, fd: FormData):
   if (String(fd.get("website") ?? "")) redirect("/order-placed"); // honeypot: pretend success to bots
 
   const s = (k: string) => String(fd.get(k) ?? "").trim().slice(0, 200);
-  const address = { name: s("name"), phone: s("phone"), email: s("email"), line1: s("line1"), line2: s("line2"), city: s("city"), state: s("state"), pincode: s("pincode") };
+  const address = { name: s("name"), email: s("email"), line1: s("line1"), line2: s("line2"), city: s("city"), state: s("state"), pincode: s("pincode") };
   if (!address.name || !address.line1 || !address.city || !address.state) return { error: "Please fill in all required fields." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address.email)) return { error: "Enter a valid email address." };
-  if (!/^\d{10}$/.test(address.phone)) return { error: "Enter a 10-digit phone number." };
   if (!/^\d{6}$/.test(address.pincode)) return { error: "Enter a 6-digit pincode." };
 
   let items: { id: number; qty: number }[];
@@ -41,7 +40,7 @@ export async function placeOrder(_prev: { error: string } | null, fd: FormData):
       replyTo: address.email,
       text: [
         `Order ${id}`, "", ...lines, "", `Shipping: $${order.shipping}`, `TOTAL (pay on delivery): $${order.total}`, "",
-        `Name: ${address.name}`, `Phone: ${address.phone}`, `Email: ${address.email}`,
+        `Name: ${address.name}`, `Email: ${address.email}`,
         `Address: ${[address.line1, address.line2, address.city, address.state, address.pincode].filter(Boolean).join(", ")}`,
       ].join("\n"),
     });

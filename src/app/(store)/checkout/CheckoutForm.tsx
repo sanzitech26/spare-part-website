@@ -23,9 +23,8 @@ export default function CheckoutForm() {
         <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">Full name *<input name="name" required className={input} /></label>
-          <label className="text-sm">Phone *<input name="phone" type="tel" inputMode="numeric" required maxLength={10} className={input} /></label>
+          <label className="text-sm">Email *<input name="email" type="email" required className={input} /></label>
         </div>
-        <label className="block text-sm">Email *<input name="email" type="email" required className={input} /></label>
         <h2 className="pt-2 text-xl font-bold">Delivery address</h2>
         <label className="block text-sm">Address line 1 *<input name="line1" required className={input} /></label>
         <label className="block text-sm">Address line 2<input name="line2" className={input} /></label>

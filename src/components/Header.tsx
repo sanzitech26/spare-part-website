@@ -29,7 +29,7 @@ export default async function Header() {
   return (
     <>
       <div className="bg-black py-1.5 text-center text-xs text-slate-400">
-        Genuine Mercedes-Benz parts · Fitment help: +91-XXXXXXXXXX · Mon–Sat 10 AM – 7 PM
+        Genuine Mercedes-Benz parts · Fitment help: support@mbspareparts.co.uk
       </div>
       <header className="sticky top-0 z-30 bg-neutral-900 text-slate-300 shadow-md">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
