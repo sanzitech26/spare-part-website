@@ -16,7 +16,7 @@ export default async function Blog() {
             <Link key={p.slug} href={`/blog/${p.slug}`} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
               {p.cover_url ? <img src={p.cover_url} alt="" className="aspect-video w-full object-cover" /> : <div className="aspect-video bg-slate-100" />}
               <div className="p-4">
-                <p className="text-xs text-slate-500">{new Date(p.created_at).toLocaleDateString("en-US", { dateStyle: "medium" })}</p>
+                <p className="text-xs text-slate-500">{new Date(p.created_at).toLocaleDateString("en-GB", { dateStyle: "medium" })}</p>
                 <h2 className="mt-1 text-lg font-bold">{p.title}</h2>
                 {p.excerpt && <p className="mt-1 text-sm text-slate-600">{p.excerpt}</p>}
               </div>

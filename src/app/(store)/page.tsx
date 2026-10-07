@@ -15,7 +15,7 @@ const featured = [
 const trust = [
   ["Genuine & OEM", "Sourced parts, clearly labelled"],
   ["Fitment help", "We confirm the part fits your car"],
-  ["Pan-India delivery", "Packed securely, tracked shipping"],
+  ["UK-wide delivery", "Packed securely, tracked shipping"],
   ["Easy returns", "7 days on unused parts"],
 ];
 

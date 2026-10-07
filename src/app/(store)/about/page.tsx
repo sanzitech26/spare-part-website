@@ -14,7 +14,7 @@ export default function About() {
       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 to-transparent" />
     </div>
     <Prose title="About us">
-      <p>MBSpareParts.co.uk supplies genuine and OEM spare parts for Mercedes-Benz cars and vans. We help owners and workshops across India find the exact part their car needs, with clear fitment information and delivery to the door.</p>
+      <p>MBSpareParts.co.uk is a UK-based company supplying genuine and OEM spare parts for Mercedes-Benz cars and vans. We help owners and workshops across the United Kingdom find the exact part their car needs, with clear fitment information and delivery to the door.</p>
       <h2>What we stand for</h2>
       <ul>
         <li><b>Clearly labelled parts.</b> Every listing says whether a part is Genuine, OEM or otherwise, so you know what you are buying.</li>
@@ -25,7 +25,7 @@ export default function About() {
       <p>Engine and transmission parts, cooling and A/C, electronics and sensors, brakes and suspension, bumpers and body panels, grilles, headlights and tail lights, wheels and interior parts for the A-Class, C-Class, E-Class, S-Class, GLC, GLE, GLS and Sprinter.</p>
       <h2>Get in touch</h2>
       <p>Looking for a part you cannot see? <Link href="/contact">Contact us</Link> and we will source it.</p>
-      <p className="text-sm text-slate-500">MBSpareParts.co.uk is an independent parts supplier and is not affiliated with or endorsed by Mercedes-Benz Group AG. Mercedes-Benz is a trademark of its owner.</p>
+      <p className="text-sm text-slate-500">MBSpareParts.co.uk is a UK-based independent parts supplier and is not affiliated with or endorsed by Mercedes-Benz Group AG. Mercedes-Benz is a trademark of its owner.</p>
     </Prose>
     </>
   );

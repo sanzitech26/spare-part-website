@@ -4,20 +4,20 @@ import { AddToCart } from "./cart";
 
 type Rel<T> = T | T[] | null;
 export type P = {
-  id: number; sku: string; name: string; price: number | null; mrp: number | null; stock: number; images: string[] | null;
+  id: number; sku: string; name: string; price: number | null; mrp: number | null; stock: number; images: string[] | null; min_qty?: number;
   specs?: Record<string, string> | null;
   categories?: Rel<{ name: string; slug: string }>;
   product_fitment?: { models: Rel<{ name: string }> }[] | null;
 };
 
 // Select string every list query should use so ProductCard has what it needs.
-export const CARD_SELECT = "id, sku, name, price, mrp, stock, images, specs, categories(name, slug), product_fitment(models(name))";
+export const CARD_SELECT = "id, sku, name, price, mrp, stock, images, min_qty, specs, categories(name, slug), product_fitment(models(name))";
 
 export const one = <T,>(v: Rel<T> | undefined): T | null => (Array.isArray(v) ? v[0] ?? null : v ?? null);
 export const modelNames = (p: P) => (p.product_fitment ?? []).map((f) => one(f.models)?.name).filter((n): n is string => !!n);
 export const discount = (p: { price: number | null; mrp: number | null }) =>
   p.price && p.mrp && p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0;
-export const fmt = (n: number) => `$${n.toLocaleString("en-US")}`;
+export const fmt = (n: number) => `£${n.toLocaleString("en-GB")}`;
 
 // Placeholder tile colours per category (full class names so Tailwind can see them).
 const tints: Record<string, string> = {
@@ -78,7 +78,8 @@ export default function ProductCard({ p }: { p: P }) {
         </div>
         <div className="mt-auto space-y-3 pt-4">
           <Price p={p} />
-          {p.price != null && <AddToCart className="w-full" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />}
+          {(p.min_qty ?? 1) > 1 && <p className="text-xs font-medium text-slate-500">Minimum order: {p.min_qty} units</p>}
+          {p.price != null && <AddToCart className="w-full" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0], min: p.min_qty }} />}
         </div>
       </div>
     </div>

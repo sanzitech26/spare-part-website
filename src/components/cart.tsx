@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type CartItem = { id: number; sku: string; name: string; price: number; image?: string; qty: number };
+export type CartItem = { id: number; sku: string; name: string; price: number; image?: string; qty: number; min?: number };
 type Cart = {
   items: CartItem[];
   count: number;
@@ -32,13 +32,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const cart: Cart = {
     items,
     count: items.reduce((n, i) => n + i.qty, 0),
-    add: (i, qty = 1) =>
+    add: (i, qty = i.min ?? 1) =>
       setItems((cur) =>
         cur.some((c) => c.id === i.id)
           ? cur.map((c) => (c.id === i.id ? { ...c, qty: c.qty + qty } : c))
           : [...cur, { ...i, qty }],
       ),
-    setQty: (id, qty) => setItems((cur) => cur.map((c) => (c.id === id ? { ...c, qty: Math.max(1, qty) } : c))),
+    setQty: (id, qty) => setItems((cur) => cur.map((c) => (c.id === id ? { ...c, qty: Math.max(c.min ?? 1, qty) } : c))),
     remove: (id) => setItems((cur) => cur.filter((c) => c.id !== id)),
     clear: () => setItems([]),
   };
@@ -63,7 +63,7 @@ export function AddToCart({ product, className = "" }: { product: Omit<CartItem,
   const [done, setDone] = useState(false);
   return (
     <button
-      onClick={() => { add(product); setDone(true); setTimeout(() => setDone(false), 1500); }}
+      onClick={() => { add(product, product.min ?? 1); setDone(true); setTimeout(() => setDone(false), 1500); }}
       className={`rounded-full bg-slate-900 py-2 text-sm font-semibold text-white hover:bg-brand ${className}`}
     >
       {done ? "Added ✓" : "Add to cart"}

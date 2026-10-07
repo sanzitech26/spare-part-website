@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { more } from "./nav";
+import { getSettings } from "@/lib/settings";
 
-export default function Footer() {
+export default async function Footer() {
+  const contact = await getSettings();
   return (
     <footer className="mt-auto bg-black text-sm text-slate-400">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-3">
         <div>
           <p className="text-lg font-extrabold text-white">MBSpareParts<span className="font-light text-slate-400">.co.uk</span></p>
           <p className="mt-2">Genuine and OEM spare parts for Mercedes-Benz. Not affiliated with or endorsed by Mercedes-Benz Group AG.</p>
+          <p className="mt-2">A UK-based company, delivering across the United Kingdom.</p>
+          <p className="mt-2"><a href={`mailto:${contact.email}`} className="hover:text-white">{contact.email}</a>{contact.phone && <> · <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="hover:text-white">{contact.phone}</a></>}</p>
         </div>
         <div>
           <p className="mb-2 font-semibold text-white">Information</p>

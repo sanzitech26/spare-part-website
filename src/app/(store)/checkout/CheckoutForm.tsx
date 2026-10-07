@@ -29,20 +29,20 @@ export default function CheckoutForm() {
         <label className="block text-sm">Address line 1 *<input name="line1" required className={input} /></label>
         <label className="block text-sm">Address line 2<input name="line2" className={input} /></label>
         <div className="grid gap-4 sm:grid-cols-3">
-          <label className="text-sm">City *<input name="city" required className={input} /></label>
-          <label className="text-sm">State *<input name="state" required className={input} /></label>
-          <label className="text-sm">Pincode *<input name="pincode" inputMode="numeric" required maxLength={6} className={input} /></label>
+          <label className="text-sm">Town / city *<input name="city" required className={input} /></label>
+          <label className="text-sm">County<input name="state" className={input} /></label>
+          <label className="text-sm">Postcode *<input name="pincode" required maxLength={8} autoComplete="postal-code" className={`${input} uppercase`} /></label>
         </div>
         <p className="rounded bg-slate-50 p-3 text-sm text-slate-600">Payment: pay on delivery. Online payment options are coming soon.</p>
       </div>
       <aside className="h-fit space-y-3 rounded-xl border border-slate-200 bg-white p-6 text-sm">
         <h2 className="text-xl font-bold">Order summary</h2>
         {items.map((i) => (
-          <div key={i.id} className="flex justify-between gap-2"><span>{i.qty} × {i.name}</span><span>${i.price * i.qty}</span></div>
+          <div key={i.id} className="flex justify-between gap-2"><span>{i.qty} × {i.name}</span><span>£{i.price * i.qty}</span></div>
         ))}
-        <div className="flex justify-between border-t pt-3"><span>Subtotal</span><span>${subtotal}</span></div>
-        <div className="flex justify-between"><span>Shipping</span><span>{shipping ? `$${shipping}` : "Free"}</span></div>
-        <div className="flex justify-between text-lg font-bold"><span>Total</span><span>${subtotal + shipping}</span></div>
+        <div className="flex justify-between border-t pt-3"><span>Subtotal</span><span>£{subtotal}</span></div>
+        <div className="flex justify-between"><span>Shipping</span><span>{shipping ? `£${shipping}` : "Free"}</span></div>
+        <div className="flex justify-between text-lg font-bold"><span>Total</span><span>£{subtotal + shipping}</span></div>
         {state?.error && <p className="rounded bg-red-50 p-2 text-red-700">{state.error}</p>}
         <button disabled={pending} className="w-full rounded-full bg-brand py-3 font-semibold text-white hover:bg-brand-dark disabled:opacity-60">
           {pending ? "Placing order…" : "Place order"}

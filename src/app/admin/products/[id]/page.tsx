@@ -38,6 +38,7 @@ async function save(fd: FormData) {
     description: String(fd.get("description") || "").trim() || null,
     price: money("price"),
     mrp: money("mrp"),
+    min_qty: Math.min(100, Math.max(1, Math.floor(Number(fd.get("min_qty"))) || 1)),
     warranty: String(fd.get("warranty") || "") || null,
     // one "Key: Value" per line
     specs: Object.fromEntries(
@@ -105,10 +106,11 @@ export default async function ProductForm({ params }: { params: Promise<{ id: st
           <Card className="adm-in space-y-4">
             <h2 className="font-semibold text-slate-900">Pricing</h2>
             <div className="grid grid-cols-2 gap-4">
-              <label className="space-y-1.5"><span className={labelCls}>Price ($)</span><input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={field} /></label>
-              <label className="space-y-1.5"><span className={labelCls}>MRP ($, optional)</span><input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>Price (£)</span><input name="price" type="number" step="0.01" min="0" defaultValue={p?.price ?? ""} placeholder="empty = coming soon" className={field} /></label>
+              <label className="space-y-1.5"><span className={labelCls}>MRP (£, optional)</span><input name="mrp" type="number" step="0.01" min="0" defaultValue={p?.mrp ?? ""} className={field} /></label>
             </div>
-            <p className="text-xs text-slate-500">Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
+            <label className="block space-y-1.5"><span className={labelCls}>Minimum order (units)</span><input name="min_qty" type="number" min="1" max="100" step="1" defaultValue={p?.min_qty ?? 1} className={field} /></label>
+            <p className="text-xs text-slate-500">Customers cannot order fewer than the minimum. Leave Price empty to show &quot;Price coming soon&quot;. Customers can add a part to the cart as soon as it has a price.</p>
           </Card>
 
           <Card className="adm-in space-y-4">

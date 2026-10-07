@@ -72,7 +72,7 @@ export default async function Products({ searchParams }: { searchParams: Promise
 
       <div className="adm-in overflow-hidden rounded-2xl border border-slate-200 bg-white">
         <div className="hidden grid-cols-[minmax(0,1fr)_110px_110px_110px_70px_44px] items-center gap-3 border-b border-slate-200 bg-slate-100 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-400 md:grid">
-          <span>Part</span><span>Price $</span><span>MRP $</span><span>Visible</span><span></span><span></span>
+          <span>Part</span><span>Price £</span><span>MRP £</span><span>Visible</span><span></span><span></span>
         </div>
         <ul className="divide-y divide-slate-200">
           {products?.map((p) => (
@@ -88,11 +88,11 @@ export default async function Products({ searchParams }: { searchParams: Promise
               </div>
               {/* inputs attach to this row's form through the form attribute */}
               <label className="block">
-                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 md:hidden">Price $</span>
+                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 md:hidden">Price £</span>
                 <input form={`f${p.id}`} name="price" type="number" step="0.01" min="0" defaultValue={p.price ?? ""} placeholder="—" aria-label="Price" className={`${cell} w-full ${p.price == null ? "border-rose-500/50 bg-rose-500/10 shadow-sm" : ""}`} />
               </label>
               <label className="block">
-                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 md:hidden">MRP $</span>
+                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 md:hidden">MRP £</span>
                 <input form={`f${p.id}`} name="mrp" type="number" step="0.01" min="0" defaultValue={p.mrp ?? ""} placeholder="—" aria-label="MRP" className={`${cell} w-full`} />
               </label>
               <div className="col-span-2 flex items-center gap-3 md:contents">

@@ -57,9 +57,9 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
                 <div className="flex items-center gap-3">
                   <Badge tone={statusTone[o.status]}>{o.status}</Badge>
                   <span className="font-mono text-xs text-slate-500">#{String(o.id).slice(0, 8)}</span>
-                  <span className="text-xs text-slate-500">{new Date(o.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</span>
+                  <span className="text-xs text-slate-500">{new Date(o.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}</span>
                 </div>
-                <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-xl font-bold text-transparent">${Number(o.total).toLocaleString("en-US")}</span>
+                <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-xl font-bold text-transparent">£{Number(o.total).toLocaleString("en-GB")}</span>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -77,13 +77,13 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
                       return (
                         <li key={n} className="flex justify-between gap-3 text-slate-700">
                           <span className="min-w-0 truncate">{i.qty} × {p?.name} <span className="text-slate-600">{p?.sku}</span></span>
-                          <span className="shrink-0">${(i.qty * Number(i.unit_price)).toLocaleString("en-US")}</span>
+                          <span className="shrink-0">£{(i.qty * Number(i.unit_price)).toLocaleString("en-GB")}</span>
                         </li>
                       );
                     })}
                   </ul>
                   <p className="mt-2 flex justify-between border-t border-slate-200 pt-2 text-xs text-slate-500">
-                    <span>Shipping</span><span>{Number(o.shipping) ? `$${o.shipping}` : "Free"}</span>
+                    <span>Shipping</span><span>{Number(o.shipping) ? `£${o.shipping}` : "Free"}</span>
                   </p>
                 </div>
               </div>

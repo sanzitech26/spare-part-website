@@ -44,9 +44,10 @@ export default async function Product({ params }: { params: Promise<{ sku: strin
           <p className="mt-1 text-sm text-slate-500">Part ref: {p.sku}</p>
 
           <div className="mt-5"><Price p={p} big /></div>
+          {(p.min_qty ?? 1) > 1 && <p className="mt-2 text-sm font-medium text-slate-600">Minimum order: {p.min_qty} units</p>}
           {p.price != null && (
             <div className="mt-5 max-w-sm">
-              <AddToCart className="w-full py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0] }} />
+              <AddToCart className="w-full py-3" product={{ id: p.id, sku: p.sku, name: p.name, price: p.price, image: p.images?.[0], min: p.min_qty }} />
             </div>
           )}
 

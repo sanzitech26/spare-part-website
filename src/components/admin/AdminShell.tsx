@@ -17,7 +17,7 @@ const groups = [
     { href: "/admin/faqs", label: "FAQ", icon: "help" },
     { href: "/admin/testimonials", label: "Testimonials", icon: "star" },
   ] },
-  { title: "Settings", items: [{ href: "/admin/account", label: "My account", icon: "user" }] },
+  { title: "Settings", items: [{ href: "/admin/settings", label: "Contact details", icon: "mail" }, { href: "/admin/account", label: "My account", icon: "user" }] },
 ];
 
 function Brand() {

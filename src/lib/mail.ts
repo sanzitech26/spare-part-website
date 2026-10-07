@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 // If they are not set yet, nothing is sent and callers carry on (orders are still saved in the database).
 export const mailConfigured = () => !!(process.env.SMTP_HOST && process.env.MAIL_TO);
 
-export async function sendMail(opts: { subject: string; text: string; replyTo?: string }): Promise<boolean> {
+export async function sendMail(opts: { subject: string; text: string; html?: string; replyTo?: string }): Promise<boolean> {
   if (!mailConfigured()) return false;
   try {
     const port = Number(process.env.SMTP_PORT) || 587;
@@ -20,7 +20,8 @@ export async function sendMail(opts: { subject: string; text: string; replyTo?: 
       to: process.env.MAIL_TO,
       replyTo: opts.replyTo,
       subject: opts.subject,
-      text: opts.text, // plain text: customer-supplied values cannot inject HTML
+      text: opts.text,
+      html: opts.html, // built in emailTemplate.ts, which escapes every customer value
     });
     return true;
   } catch (e) {

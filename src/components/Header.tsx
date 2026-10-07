@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { getSettings } from "@/lib/settings";
 import { CartBadge } from "./cart";
 import { primary, more } from "./nav";
 
@@ -19,6 +20,7 @@ const label = "px-4 pb-1 pt-3 text-xs font-semibold uppercase text-slate-400";
 
 export default async function Header() {
   const sb = await supabase();
+  const contact = await getSettings();
   const [{ data: categories }, { data: models }] = await Promise.all([
     sb.from("categories").select("name, slug").order("sort").order("name"),
     sb.from("models").select("name, slug").order("sort").order("name"),
@@ -29,7 +31,7 @@ export default async function Header() {
   return (
     <>
       <div className="bg-black py-1.5 text-center text-xs text-slate-400">
-        Genuine Mercedes-Benz parts · Fitment help: support@mbspareparts.co.uk
+        UK-based · Genuine Mercedes-Benz parts · Fitment help: {contact.email}{contact.phone && ` · ${contact.phone}`}
       </div>
       <header className="sticky top-0 z-30 bg-neutral-900 text-slate-300 shadow-md">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">

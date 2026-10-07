@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { Badge, Card, Icon, PageHeader, ProgressBar, StatCard, btn, btnGhost, statusTone } from "@/components/admin/ui";
 
-const money = (n: number) => `$${n.toLocaleString("en-US")}`;
+const money = (n: number) => `£${n.toLocaleString("en-GB")}`;
 
 export default async function Dashboard() {
   const sb = await requireAdmin();
@@ -23,7 +23,7 @@ export default async function Dashboard() {
 
   return (
     <>
-      <PageHeader title="Dashboard" subtitle={new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}>
+      <PageHeader title="Dashboard" subtitle={new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}>
         <Link href="/admin/products/new" className={btn}><Icon name="plus" className="h-4 w-4" /> Add part</Link>
       </PageHeader>
 
@@ -79,7 +79,7 @@ export default async function Dashboard() {
               <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
                 <div>
                   <p className="font-medium text-slate-900">{(o.address as { name?: string })?.name ?? "Guest"}</p>
-                  <p className="text-xs text-slate-500">#{String(o.id).slice(0, 8)} · {new Date(o.created_at).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</p>
+                  <p className="text-xs text-slate-500">#{String(o.id).slice(0, 8)} · {new Date(o.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}</p>
                 </div>
                 <div className="flex items-center gap-3"><Badge tone={statusTone[o.status]}>{o.status}</Badge><span className="font-semibold text-slate-900">{money(Number(o.total))}</span></div>
               </li>
