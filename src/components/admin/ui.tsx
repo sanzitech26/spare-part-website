@@ -66,7 +66,7 @@ const tones = {
   emerald: { glow: "from-emerald-300/40", icon: "text-emerald-600 bg-emerald-50 ring-emerald-200" },
   rose: { glow: "from-rose-300/40", icon: "text-rose-600 bg-rose-50 ring-rose-200" },
 };
-export type Tone = keyof typeof tones;
+type Tone = keyof typeof tones;
 
 export function StatCard({ label, value, hint, icon, tone = "indigo", href }: { label: string; value: React.ReactNode; hint?: string; icon: string; tone?: Tone | "cyan"; href?: string }) {
   const t = tones[tone === "cyan" ? "indigo" : tone];

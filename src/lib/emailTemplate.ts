@@ -13,7 +13,7 @@ const wrap = (title: string, body: string) => `<!doctype html><html><body style=
 
 const row = (k: string, v: string) => `<tr><td style="padding:6px 12px 6px 0;color:#64748b;vertical-align:top;white-space:nowrap">${k}</td><td style="padding:6px 0">${v}</td></tr>`;
 
-export type OrderMail = {
+type OrderMail = {
   id: string; name: string; email: string; address: string;
   items: { sku: string; name: string; qty: number; price: number }[]; shipping: number; total: number;
 };

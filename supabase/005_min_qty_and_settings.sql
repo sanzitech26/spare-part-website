@@ -7,7 +7,7 @@ create table if not exists site_settings (
   email text,
   phone text
 );
-insert into site_settings (id, email, phone) values (1, 'support@mbspareparts.co.uk', null) on conflict (id) do nothing;
+insert into site_settings (id, email, phone) values (1, 'info@mbspareparts.co.uk', null) on conflict (id) do nothing;
 alter table site_settings enable row level security;
 drop policy if exists "public read" on site_settings;
 drop policy if exists "admin write" on site_settings;
